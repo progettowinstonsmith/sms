@@ -1,0 +1,23 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "TNT"
+author = "\"Emmanuele Somma\""
+author-email = "\"esomma@nrptt.org\""
+home-page = "https://github.com/exedre/tnt"
+classifiers = ["Intended Audience :: Developers", "License :: OSI Approved :: BSD License", "Programming Language :: Python :: 3", "Topic :: Software Development :: Libraries :: Python Modules"]
+
+
+[tool.flit.scripts]
+user_groups = "TNT.user_groups:main"
+users = "TNT.users:main"
+categories = "TNT.categories:main"
+forums = "TNT.forums:main"
+topics = "TNT.topics:main"
+posts = "TNT.posts:main"
+post_texts = "TNT.post_text:main"
+topic_last_posts = "TNT.topic_last_post:main"
+topic_first_posts = "TNT.topic_first_post:main"
+attachments = "TNT.attachments:main"

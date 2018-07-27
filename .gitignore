@@ -1,0 +1,17 @@
+*.pyc
+*.exe
+*/dist/*
+*/build/*
+MANIFEST
+build/
+deb_dist/
+dist/
+*~
+*/*~
+*/__pycache__/
+*/*.pyc
+/venv/
+/instance/local_config.py
+/build/
+/dist/
+/pubdb.egg-info/

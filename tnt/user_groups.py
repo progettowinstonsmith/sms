@@ -85,101 +85,55 @@ CREATE TABLE `bb_groups` (
 
 
 """
-from datetime import date
-import time
+import argparse
+import json
+from pprint import pprint
 
-from TNT import TNTdb
+from TNT.app import app
+from TNT.mapper import Map,IMap
+from TNT.transform import Transformer, now, stringify
+from TNT.func import now, stringify
 
-def now_to_epoch():
-    return int(time.mktime(time.gmtime()))
-
-def to_epoch(indate, format='%Y-%m-%d'):
-    return int(time.mktime(time.strptime(indate, pattern)))
-
-def from_epoch(epoch):
-    pass
-
-class Renumberer:
-    LAST_ID = 1
-    MAP = {}
-
-    def __call__(self,num):
-        if num not in self.MAP:
-            self.MAP[num]=self.LAST_ID
-            self.LAST_ID += 1
-        return self.MAP[num]
-
-def test_renumberer():
-    import random
-    from pprint import pprint 
-    arange = list(range(0,100))
-    random.shuffle(arange)
-    renums = map(Renumberer(), arange)
-    pprint(list(zip(arange, renums)))
-
-
-
-class Transformer:
-    RULES = {}
-    ADDITIONS = {}
-
-    def __init__(self,table):
-        self.table = table
-        self.data = []
-        
-    def record(self, info):
-        record = info
-        for rkey, rfunc in self.RULES.items():
-            value = info[rkey]
-            if rkey in info:
-                value = rfunc(value)
-            record[rkey] = value 
-        for rkey, rfunc in self.ADDITIONS.items():
-            record[rkey] = rfunc(record)
-        return record
-
-    def insert(self):
-        return "INSERT INTO {table}({fields}) VALUES".format(table=self.table,values=self.FIELDS)
-        
-    def values(self, info):
-        info = self.record(info)
-        values = "({values})".format(values=self.VALUES)
-        values = values.vformat(info)
-        return values
-
-    def transform(self):  
-        insert = self.insert()
-        values = []
-        for info in self.data:
-            values.append(self.values(info))
-        return insert + "\n\t".join(values)
-        
-    def load(self, jsonfile):
-        self.data = json.load(jsonfile)
-        
-def stringify(x):
-    return "'"+x+"'"
-
-def now(x):
-    return now_to_epoch()
-    
 class USER_GROUP(Transformer):
     RULES = {
-        'group_id': Renumberer(),
-        'group_title': stringify,
+        # 'g_id': 'group',
+        'g_title': stringify,
 
     }
     ADDITIONS = {
         'group_time': now,
         'mod_time': now,
-        'group_type': lambda x: 2,
-        'release_group': lambda x: 1,
-        'group_description': lambda x: '',
-        'group_signature': lambda x: '',        
+        'group_type': lambda trn,x: 2,
+        'release_group': lambda trn,x: 1,
+        'group_description': lambda trn,x: "''",
+        'group_signature': lambda trn,x: "''",
+        'group_moderator': lambda trn,x: "'2'",
     }
-    FIELDS = 'group_id,group_time,mod_time,group_type,release_group,group_name,group_description,group_signature'
-    VALUES = '{g_id},{group_time},{mod_time},{group_type},{release_group},{g_title},{group_description},{group_signature}'
-
+    FIELDS = [
+        {'group_id': '{g_id}'},
+        {'group_time': '{group_time}'},
+        {'mod_time': '{mod_time}'},
+        {'group_type': '{group_type}'},
+        {'release_group': '{release_group}'},
+        {'group_name': '{g_title}'},
+        {'group_description': '{group_description}'},
+        {'group_signature': '{group_signature}'},
+        {'group_moderator': '{group_moderator}'},
+        {'group_single_user': '0'},
+    ]
+    SUB = 'user_groups'
+    TABLE = 'bb_groups'
+    DB_FIELDS = [ 'g_id', 'g_title']
+    DB_ORDER = 'g_id'
+    DB_TABLES = 'Trck_groups'
+    # PREMAPS = [ ('g_id','group', 10),]
+    
+    def with_db_results(self):
+        sql = "INSERT INTO bb_user_group(group_id, user_id,user_time) VALUES "
+        records = []
+        for result in self.db_results[self.SUB]:
+            records.append( "({g_id},2,{group_time})".format(**result) )
+        return sql + ',\n\t'.join(records) + ";"
 
 def main():
-    print("User_groups migration")
+    app('user_group',USER_GROUP)
