@@ -160,6 +160,7 @@ CREATE TABLE `bb_users` (
 
 """
 import json
+from pathlib import Path
 
 from TNT.app import app
 from TNT.transform import Transformer
@@ -197,7 +198,7 @@ class USER(Transformer):
     DB_TABLES = 'Trck_members'
     # Only Good users
     ID_LABEL = 'id'
-    GOOD_ID = json.load(open("/Users/exedre/.tnt/good.map",'r'))
+    GOOD_ID = json.load(open(str(Path("~/.tnt/good.map").expanduser()),'r'))
 
 def main():
     app('user',USER)
