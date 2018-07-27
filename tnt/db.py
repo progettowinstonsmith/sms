@@ -21,6 +21,8 @@ class TNTdb:
 
     def get(self, name, fields, tables, where, 
             order, LIMIT="", WHERE=""):
+        if len(WHERE)==0:
+            WHERE = ""
         GROUPS = []
         FLDS = ','.join(fields)
         if order:

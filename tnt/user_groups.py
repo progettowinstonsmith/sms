@@ -90,8 +90,7 @@ import json
 from pprint import pprint
 
 from TNT.app import app
-from TNT.mapper import Map,IMap
-from TNT.transform import Transformer, now, stringify
+from TNT.transform import Transformer
 from TNT.func import now, stringify
 
 class USER_GROUP(Transformer):
