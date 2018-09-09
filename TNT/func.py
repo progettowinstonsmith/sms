@@ -1,3 +1,4 @@
+import re
 import time
 import ipaddress
 import logging
@@ -14,9 +15,13 @@ def from_epoch(epoch):
 
 ### functors
 #
+def escape(x):
+    return re.sub(r"'","''",x)
+
 def stringify(trn, x):
     if x:
-        return "\""+trn.db.cnx.converter.escape(x)+"\""
+        return "\""+escape(x)+"\""
+    # return "\""+trn.db.cnx.converter.escape(x)+"\""
     return "\"\""
 
 def now(trn, x):

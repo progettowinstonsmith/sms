@@ -41,8 +41,8 @@ from pprint import pprint
 
 from TNT.app import app
 from TNT.mapper import Map,IMap
-from TNT.transform import Transformer, now, stringify
-from TNT.func import stringify
+from TNT.transform import Transformer
+from TNT.func import stringify, now
 
 class CATEGORY(Transformer):
     ALTER = [
