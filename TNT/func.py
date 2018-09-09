@@ -15,11 +15,18 @@ def from_epoch(epoch):
 
 ### functors
 #
-def escape(x):
-    return re.sub(r"'","''",x)
+def escape(value):
+    value = re.sub('\\', '\\\\',value)
+    value = re.sub('\n', '\\n',value)
+    value = re.sub('\r', '\\r',value)
+    value = re.sub('\047', '\134\047',value)  # single quotes
+    value = re.sub('\042', '\134\042',value)  # double quotes
+    value = re.sub('\032', '\134\032',value)  # for Win32
+    return re.sub(r"'","''",value)
 
 def stringify(trn, x):
     if x:
+
         return "\""+escape(x)+"\""
     # return "\""+trn.db.cnx.converter.escape(x)+"\""
     return "\"\""
